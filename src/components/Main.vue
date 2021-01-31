@@ -1,25 +1,22 @@
 <template lang="pug">
 .main
   .list
-    ul(
-      v-for='item in list'
-      class='ToDoList'
-    )
-      .item(
-        @mouseenter = "Mouseover($event, true)"
-        @mouseleave = "Mouseover($event, false)"
-      )
-        p {{item}}
+    ul(v-for='item, index in list' class='ToDoList')
+      .item(@mouseenter = "Mouseover($event, true)" @mouseleave = "Mouseover($event, false)")
+        p(v-if='!edit') {{item}}
+        input(v-if='edit' v-model='data')
         .list-button
-          button() Edit
-          button() Delete
+          button(v-if='!edit' @click='isedit(item)') Edit
+          button(v-if='!edit' @click='removelist(index)') Delete
+          button(v-if='edit' @click='saveedit(data, index)') Save
+          button(v-if='edit' @click='isedit(item)') X
       .input-add-task
         form
           input
           button Add task
   .form
-    form(v-if='show' @submit.prevent="save($event.target)")
-      input
+    form(v-if='show' @submit.prevent="savelist($event.target)")
+      input(v-model='newList')
       button Add
   .button
     button(@click='showForm') Add todo list
@@ -35,6 +32,9 @@ export default {
   },
   data () {
     return {
+      newList: '',
+      edit: false,
+      data: ''
     }
   },
   computed: mapState({
@@ -45,14 +45,31 @@ export default {
     showForm () {
       this.$store.dispatch('showform')
     },
-    save (item) {
+    savelist (item) {
       this.$store.dispatch('savelist', item.[0].value)
+      this.newList = ''
+    },
+    isedit (item) {
+      if (this.edit) {
+        this.edit = false
+      } else {
+        this.edit = true
+      }
+      this.data = item
+    },
+    saveedit (data, index) {
+      this.$store.dispatch('saveedit', [data, index])
+      this.newList = ''
+      this.edit = false
+    },
+    removelist (index) {
+      this.$store.dispatch('removelist', index)
     },
     Mouseover (e, isMouseover) {
       if (isMouseover) {
-        e.target.childNodes.[1].style.visibility = 'visible'
+        e.target.childNodes.[2].style.visibility = 'visible'
       } else {
-        e.target.childNodes.[1].style.visibility = 'hidden'
+        e.target.childNodes.[2].style.visibility = 'hidden'
       }
     }
   }
