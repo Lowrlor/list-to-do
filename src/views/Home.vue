@@ -1,7 +1,7 @@
-<template>
+<template lang="pug">
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <Main msg="Welcome to Your Vue.js App"/>
+    Main
   </div>
 </template>
 
