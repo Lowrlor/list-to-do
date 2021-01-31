@@ -1,5 +1,7 @@
 <template lang="pug">
 .main
+  .button
+    button Add to do list
 </template>
 
 <script>
