@@ -2,7 +2,7 @@
 .list
   ul(v-for='item, index in list' class='ToDoList')
     .item(@mouseenter = "Mouseover($event, true)" @mouseleave = "Mouseover($event, false)")
-      input(v-if='edit && thisIndex === index' v-model='item.name')
+      input(v-if='edit && thisIndex === index' v-model='item.name' class='list-input')
       p(v-else) {{item.name}}
       .list-button
         button(v-if='!edit' @click='isedit(item, index)') Edit
@@ -12,10 +12,13 @@
     .task-list
       ul(v-for='task, taskIndex in item.tasks')
         .task
-          p() {{task}}
+          input(v-if='isTaskEditing' v-model='taskData' class='list-input')
+          p(v-else) {{task}}
           .task-button
-            button(@click='removeTask(item._id, index, taskIndex)') X
-            button() Edit
+            button(v-if='!isTaskEditing' @click='removeTask(item._id, index, taskIndex)') X
+            button(v-if='!isTaskEditing' @click='taskEditing(index, task)') Edit
+            button(v-if='isTaskEditing' @click='saveTaskEdit(item._id, index, taskIndex)') Save
+            button(v-if='isTaskEditing' @click='taskEditing(index)') X
     .form-add-task
       FormTask(:name='item.name' :index='index')
   FormList
@@ -33,8 +36,10 @@ export default {
     return {
       newList: '',
       edit: false,
+      isTaskEditing: false,
       data: '',
-      thisIndex: -1
+      thisIndex: -1,
+      taskData: ''
     }
   },
   props: {
@@ -69,6 +74,17 @@ export default {
         this.edit = true
       }
     },
+    taskEditing (index, item) {
+      console.log(item)
+      console.log(index)
+      if (this.isTaskEditing) {
+        this.isTaskEditing = false
+      } else {
+        this.isTaskEditing = true
+      }
+      console.log(item)
+      this.taskData = item
+    },
     saveedit (data, index, id) {
       this.$http
         .post('/list/edit/' + id, { name: data })
@@ -97,6 +113,21 @@ export default {
           this.$store.dispatch('tasks/remove', { index, taskIndex })
         })
     },
+    saveTaskEdit (id, index, taskIndex) {
+      console.log(id)
+      this.isTaskEditing = false
+      this.$http
+        .post('/task/edit/' + id, { task: this.taskData, index })
+        .then((response) => {
+          return response.data
+        })
+        .then((response) => {
+          this.$store.dispatch('tasks/edit', { index, taskIndex, data: this.taskData })
+        })
+        .catch(err => {
+          console.log(this.$Err(err))
+        })
+    },
     Mouseover (e, isMouseover) {
       if (isMouseover) {
         e.target.childNodes.[1].style.visibility = 'visible'
@@ -113,7 +144,11 @@ export default {
   display: flex;
 }
 .task-button {
-  position: relative;
-  top: 15px
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+}
+.list-input {
+  height: 30px;
+  width: 150px;
 }
 </style>

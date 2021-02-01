@@ -54,6 +54,9 @@ const moduleTasks = ({
     },
     REMOVE (state, payload) {
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1)
+    },
+    EDIT (state, payload) {
+      this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, payload.data)
     }
   },
   actions: {
@@ -62,6 +65,9 @@ const moduleTasks = ({
     },
     remove ({ commit }, payload) {
       commit('REMOVE', payload)
+    },
+    edit ({ commit }, payload) {
+      commit('EDIT', payload)
     }
   }
 })
