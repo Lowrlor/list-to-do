@@ -3,7 +3,8 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const moduleList = ({
+  namespaced: true,
   state: {
     showForm: false,
     todolist: []
@@ -12,34 +13,60 @@ export default new Vuex.Store({
     SHOWFORM (state) {
       state.showForm = true
     },
-    SAVELIST (state, payload) {
-      console.log(payload)
+    ADDLIST (state, payload) {
       state.todolist.push(payload)
-      console.log(state.todolist)
     },
     REMOVELIST (state, index) {
-      console.log(index)
       state.todolist.splice(index, 1)
     },
     SAVEEDIT (state, payload) {
-      console.log(payload)
       state.todolist[payload[1]] = payload[0]
+    },
+    GETLIST (state, payload) {
+      state.todolist = payload
     }
   },
   actions: {
     showform ({ commit }) {
       commit('SHOWFORM')
     },
-    savelist ({ commit }, payload) {
-      commit('SAVELIST', payload)
+    addlist ({ commit }, payload) {
+      commit('ADDLIST', payload)
     },
     removelist ({ commit }, index) {
       commit('REMOVELIST', index)
     },
     saveedit ({ commit }, payload) {
       commit('SAVEEDIT', payload)
+    },
+    getlist ({ commit }, payload) {
+      commit('GETLIST', payload)
+    }
+  }
+})
+const moduleTasks = ({
+  namespaced: true,
+  mutations: {
+    ADD (state, payload) {
+      console.log(payload[0])
+      this.state.list.todolist[payload[1]].tasks.push(payload[0])
+    },
+    REMOVE (state, payload) {
+      this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1)
     }
   },
+  actions: {
+    add ({ commit }, payload) {
+      commit('ADD', payload)
+    },
+    remove ({ commit }, payload) {
+      commit('REMOVE', payload)
+    }
+  }
+})
+export default new Vuex.Store({
   modules: {
+    list: moduleList,
+    tasks: moduleTasks
   }
 })
