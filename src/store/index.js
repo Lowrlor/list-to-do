@@ -20,6 +20,7 @@ const moduleList = ({
       state.todolist.splice(index, 1)
     },
     SAVEEDIT (state, payload) {
+      console.log(payload)
       state.todolist[payload[1]] = payload[0]
     },
     GETLIST (state, payload) {

@@ -2,17 +2,20 @@
 .list
   ul(v-for='item, index in list' class='ToDoList')
     .item(@mouseenter = "Mouseover($event, true)" @mouseleave = "Mouseover($event, false)")
-      p(v-if='!edit') {{item.name}}
-      input(v-if='edit' v-model='data')
+      input(v-if='edit && thisIndex === index' v-model='item.name')
+      p(v-else) {{item.name}}
       .list-button
-        button(v-if='!edit' @click='isedit(item)') Edit
+        button(v-if='!edit' @click='isedit(item, index)') Edit
         button(v-if='!edit' @click='removelist(index, item._id)') Delete
-        button(v-if='edit' @click='saveedit(data, index)') Save
+        button(v-if='edit' @click='saveedit(item.name, index, item._id)') Save
         button(v-if='edit' @click='isedit(item)') X
     .task-list
-      ul(v-for='task, taskIndex in item.tasks') {{task}}
-        button(@click='removeTask(item._id, index, taskIndex)') X
-        button Edit
+      ul(v-for='task, taskIndex in item.tasks')
+        .task
+          p() {{task}}
+          .task-button
+            button(@click='removeTask(item._id, index, taskIndex)') X
+            button() Edit
     .form-add-task
       FormTask(:name='item.name' :index='index')
   FormList
@@ -30,7 +33,8 @@ export default {
     return {
       newList: '',
       edit: false,
-      data: ''
+      data: '',
+      thisIndex: -1
     }
   },
   props: {
@@ -56,18 +60,27 @@ export default {
       })
   },
   methods: {
-    isedit (item) {
+    isedit (item, index) {
       if (this.edit) {
         this.edit = false
+        this.thisIndex = -1
       } else {
+        this.thisIndex = index
         this.edit = true
       }
-      this.data = item
     },
-    saveedit (data, index) {
-      this.$store.dispatch('list/saveedit', [data, index])
-      this.newList = ''
-      this.edit = false
+    saveedit (data, index, id) {
+      this.$http
+        .post('/list/edit/' + id, { name: data })
+        .then((response) => {
+          return response.data
+        })
+        .then((response) => {
+          this.$store.dispatch('list/saveedit', [response, index])
+          this.newList = ''
+          this.edit = false
+          this.i = ''
+        })
     },
     removelist (index, id) {
       this.$http
@@ -86,14 +99,21 @@ export default {
     },
     Mouseover (e, isMouseover) {
       if (isMouseover) {
-        e.target.childNodes.[2].style.visibility = 'visible'
+        e.target.childNodes.[1].style.visibility = 'visible'
       } else {
-        e.target.childNodes.[2].style.visibility = 'hidden'
+        e.target.childNodes.[1].style.visibility = 'hidden'
       }
     }
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss">
+.task {
+  display: flex;
+}
+.task-button {
+  position: relative;
+  top: 15px
+}
 </style>
