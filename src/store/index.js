@@ -49,7 +49,6 @@ const moduleTasks = ({
   namespaced: true,
   mutations: {
     ADD (state, payload) {
-      console.log(payload[0])
       this.state.list.todolist[payload[1]].tasks.push(payload[0])
     },
     REMOVE (state, payload) {
@@ -57,6 +56,22 @@ const moduleTasks = ({
     },
     EDIT (state, payload) {
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, payload.data)
+    },
+    MOVE (state, payload) {
+      if (payload.side === 'up') {
+        if (payload.taskIndex !== 0) {
+          var element = this.state.list.todolist[payload.index].tasks[payload.taskIndex]
+          var splicedElement = this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex - 1, 1, element)
+          this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, splicedElement[0])
+        }
+      } else {
+        var len = this.state.list.todolist[payload.index].tasks.length
+        if (payload.taskIndex + 1 !== len) {
+          element = this.state.list.todolist[payload.index].tasks[payload.taskIndex]
+          splicedElement = this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex + 1, 1, element)
+          this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, splicedElement[0])
+        }
+      }
     }
   },
   actions: {
@@ -68,6 +83,9 @@ const moduleTasks = ({
     },
     edit ({ commit }, payload) {
       commit('EDIT', payload)
+    },
+    move ({ commit }, payload) {
+      commit('MOVE', payload)
     }
   }
 })

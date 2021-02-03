@@ -25,12 +25,4 @@ export default {
   border: 3px solid;
   border-radius: 0 0 15px 15px;
 }
-.list-button {
-  visibility: hidden;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-}
-.item {
-  display: inline-flex;
-}
 </style>
