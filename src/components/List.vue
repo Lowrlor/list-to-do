@@ -6,7 +6,7 @@
         font-awesome-icon(icon="calendar-alt" class='calendar')
         input(v-if='edit && thisIndex === index' v-model='item.name' class='list-input')
         p(v-else) {{item.name}}
-      .list-button
+      .list--button
         font-awesome-icon(icon="pen")(v-if='!edit' @click='listEditing(item, index)')
         font-awesome-icon(icon="trash-alt")(v-if='!edit' @click='removelist(index, item._id)')
         button(v-if='edit' @click='saveedit(item.name, index, item._id)') Save
@@ -146,6 +146,10 @@ export default {
 </script>
 
 <style lang="scss">
+.ToDoList {
+  border: 3px solid;
+  border-radius: 0 0 15px 15px;
+}
 .list--header {
   background: linear-gradient(0deg, rgba(7,24,167,1) 22%, rgba(11,115,238,1) 50%);
   color: #fff;
@@ -153,7 +157,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.list-button {
+.list--button {
   opacity: 0;
   margin-block-start: 1em;
   margin-block-end: 1em;

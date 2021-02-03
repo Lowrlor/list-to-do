@@ -1,18 +1,18 @@
 <template lang="pug">
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    Main
+    List
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Main from '@/components/Main.vue'
+import List from '@/components/List.vue'
 
 export default {
   name: 'Home',
   components: {
-    Main
+    List
   }
 }
 </script>
