@@ -6,12 +6,17 @@ Vue.use(Vuex)
 const moduleList = ({
   namespaced: true,
   state: {
+    todolist: [],
     showForm: false,
-    todolist: []
+    editable: false,
+    thisIndex: -1
   },
   mutations: {
     SHOWFORM (state) {
       state.showForm = true
+    },
+    GETLIST (state, payload) {
+      state.todolist = payload
     },
     ADDLIST (state, payload) {
       state.todolist.push(payload)
@@ -19,17 +24,25 @@ const moduleList = ({
     REMOVELIST (state, index) {
       state.todolist.splice(index, 1)
     },
-    SAVEEDIT (state, payload) {
-      console.log(payload)
+    UPDATE (state, payload) {
       state.todolist[payload[1]] = payload[0]
     },
-    GETLIST (state, payload) {
-      state.todolist = payload
+    EDIT (state, index) {
+      if (state.editable) {
+        state.editable = false
+        state.thisIndex = -1
+      } else {
+        state.thisIndex = index
+        state.editable = true
+      }
     }
   },
   actions: {
     showform ({ commit }) {
       commit('SHOWFORM')
+    },
+    getlist ({ commit }, payload) {
+      commit('GETLIST', payload)
     },
     addlist ({ commit }, payload) {
       commit('ADDLIST', payload)
@@ -37,16 +50,22 @@ const moduleList = ({
     removelist ({ commit }, index) {
       commit('REMOVELIST', index)
     },
-    saveedit ({ commit }, payload) {
-      commit('SAVEEDIT', payload)
+    update ({ commit }, payload) {
+      commit('UPDATE', payload)
     },
-    getlist ({ commit }, payload) {
-      commit('GETLIST', payload)
+    edit ({ commit }, index) {
+      commit('EDIT', index)
     }
   }
 })
 const moduleTasks = ({
   namespaced: true,
+  state: {
+    listIndex: -1,
+    thisTaskIndex: -1,
+    taskData: '',
+    editable: false
+  },
   mutations: {
     ADD (state, payload) {
       this.state.list.todolist[payload[1]].tasks.push(payload[0])
@@ -54,8 +73,9 @@ const moduleTasks = ({
     REMOVE (state, payload) {
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1)
     },
-    EDIT (state, payload) {
+    UPDATE (state, payload) {
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, payload.data)
+      state.editable = false
     },
     MOVE (state, payload) {
       if (payload.side === 'up') {
@@ -72,6 +92,18 @@ const moduleTasks = ({
           this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, splicedElement[0])
         }
       }
+    },
+    TASKEDIT (state, payload) {
+      if (state.editable) {
+        state.editable = false
+        state.thisTaskIndex = -1
+        state.listIndex = -1
+      } else {
+        state.editable = true
+        state.thisTaskIndex = payload.taskIndex
+        state.listIndex = payload.index
+      }
+      state.taskData = payload.item
     }
   },
   actions: {
@@ -81,11 +113,14 @@ const moduleTasks = ({
     remove ({ commit }, payload) {
       commit('REMOVE', payload)
     },
-    edit ({ commit }, payload) {
-      commit('EDIT', payload)
+    update ({ commit }, payload) {
+      commit('UPDATE', payload)
     },
     move ({ commit }, payload) {
       commit('MOVE', payload)
+    },
+    taskedit ({ commit }, payload) {
+      commit('TASKEDIT', payload)
     }
   }
 })

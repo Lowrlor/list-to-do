@@ -18,9 +18,6 @@ export default {
   },
   methods: {
     savetask (item, index) {
-      console.log(item)
-      console.log(index)
-      console.log(this.name)
       this.$http
         .post('/task', { name: this.name, task: item[0].value })
         .then((response) => {
