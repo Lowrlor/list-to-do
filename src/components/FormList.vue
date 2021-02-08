@@ -52,7 +52,7 @@ export default {
 <style lang="scss" scoped>
 .button {
     font-size: 20px;
-    border: 0;
+    border: 2px solid #0b4ad7;
     background: #066ae1;
     color: white;
 }

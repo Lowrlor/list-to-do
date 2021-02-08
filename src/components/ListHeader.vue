@@ -31,9 +31,26 @@ export default {
     ListButton
   },
   computed: mapState({
+    todolist: state => state.list.todolist,
     editable: state => state.list.editable,
     thisIndex: state => state.list.thisIndex
-  })
+  }),
+  watch: {
+    todolist (val) {
+      console.log(val)
+      for (var i = 0; i < val.length; i++) {
+        var element = document.getElementsByClassName('form-task').[i]
+        if (val[i].tasks.length === 0) {
+          console.log('here')
+          console.log(element)
+          element.style.borderRadius = '1px 1px 10px 10px'
+        } else {
+          console.log('there')
+          element.style.borderRadius = '1px 1px 0 0'
+        }
+      }
+    }
+  }
 }
 </script>
 
