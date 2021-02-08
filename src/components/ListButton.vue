@@ -1,8 +1,8 @@
 <template lang="pug">
 .list-button
   template(v-if='!editable')
-    font-awesome-icon(icon="pen")(@click='listEdit(item, index)')
-    font-awesome-icon(icon="trash-alt")(@click='removelist(index, item._id)')
+    font-awesome-icon(icon="pen" class='icon')(@click='listEdit(item, index)')
+    font-awesome-icon(icon="trash-alt" class='icon')(@click='removelist(index, item._id)')
   template(v-if='editable')
     button(@click='update(item.name, index, item._id)') Save
     button(@click='listEdit(item)') X

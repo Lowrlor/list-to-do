@@ -1,17 +1,31 @@
 <template lang="pug">
 .task-list
-  ul(v-for='task, taskIndex in tasks')
+  li(
+    v-for='task, taskIndex in tasks'
+    draggable
+    @dragstart='startDrag($event, index, taskIndex)'
+    @drop='onDrop($event, taskIndex, index, dropStartIndex, _id)'
+    @dragover.prevent
+    @dragenter.prevent
+    class='drag-el'
+  )
     .task
       template(v-if='editable && taskIndex === thisTaskIndex && thisIndex === index')
         input(
           v-model='data'
           @blur='updateTask(_id, taskIndex, index)'
-          class='list-input'
+          @focus='disableDraggable(taskIndex, task)'
+          class='task-textarea'
           ref='searchInput'
+          id='txtArea'
+          v-on:keyup.enter='onEnter(_id, taskIndex, index)'
+          v-on:keyup.esc='backToOldData(taskIndex)'
+          @keydown="$event.keyCode === 13 ? $event.preventDefault() : false"
+          toggle-nav='taskEdit(taskIndex, task, index)'
         )
       template(v-else)
-        span(@click='taskEdit(taskIndex, task, index)' ref='span').span
-          p(ref='text') {{task}}
+        span(@click='taskEdit(taskIndex, task, index)').span
+          p(class='text') {{task}}
       TaskButton(
         :index='index'
         :_id='_id'
@@ -29,7 +43,9 @@ export default {
   name: 'TaskList',
   data () {
     return {
-      data: ''
+      data: '',
+      input: false,
+      oldData: ''
     }
   },
   props: {
@@ -49,24 +65,27 @@ export default {
     taskData: state => state.tasks.taskData,
     editable: state => state.tasks.editable,
     thisIndex: state => state.tasks.listIndex,
-    thisTaskIndex: state => state.tasks.thisTaskIndex
+    thisTaskIndex: state => state.tasks.thisTaskIndex,
+    dropStartIndex: state => state.tasks.dropStartIndex
   }),
   methods: {
     taskEdit (taskIndex, item, index) {
       this.$store.dispatch('tasks/taskedit', { item, taskIndex, index })
         .then(() => {
+          this.$refs.searchInput.[0].style.width = item.length * 8 + 'px'
           this.focusing(this.$refs)
         })
     },
     updateTask (id, taskIndex, index) {
-      console.log('blure')
       this.$http
-        .post('/task/edit/' + id, { task: this.data, taskIndex })
+        .post('/task/edit/' + id, { task: this.data.trim(), taskIndex })
         .then((response) => {
           return response.data
         })
         .then((response) => {
-          this.$store.dispatch('tasks/update', { index, taskIndex, data: this.data })
+          this.$store.dispatch('tasks/update', { index, taskIndex, data: this.data.trim() })
+          document.getElementsByClassName('drag-el')[taskIndex].draggable = true
+          this.input = false
         })
         .catch(err => {
           console.log(this.$Err(err))
@@ -76,27 +95,89 @@ export default {
       if (this.editable) {
         ref.searchInput.[0].focus()
       }
+    },
+    startDrag (evt, index, taskIndex) {
+      this.$store.dispatch('tasks/saveindex', { index, dropStartIndex: taskIndex })
+      evt.dataTransfer.dropEffect = 'move'
+      evt.dataTransfer.effectAllowed = 'move'
+    },
+    onDrop (evt, taskIndex, index, dropStartIndex, _id) {
+      this.$http
+        .post('/task/dropmove', { onDropIndex: taskIndex, index, dropStartIndex, id: _id })
+        .then((response) => {
+          this.$store.dispatch('tasks/dropmove', { onDropIndex: taskIndex })
+        })
+    },
+    disableDraggable (taskIndex, task) {
+      document.getElementsByClassName('drag-el')[taskIndex].draggable = false
+      this.input = true
+      this.oldData = task
+    },
+    onEnter (id, taskIndex, index) {
+      this.updateTask(id, taskIndex, index)
+    },
+    backToOldData (taskIndex) {
+      this.data = this.oldData
     }
   },
   watch: {
     taskData: function (value) {
       this.data = value
+    },
+    data: function (value) {
+      if (this.input) {
+        this.$refs.searchInput.[0].style.width = value.length * 8 + 'px'
+      }
+    },
+    tasks (val) {
+      var element = document.getElementsByClassName('form-task').[this.index]
+      if (val.length !== 0) {
+        element.style.borderRadius = '0 0 0 0'
+      } else {
+        element.style.borderRadius = '0 0 10px 10px'
+      }
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .task {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  &:hover {
-    background: #f7ee0e91;
-  }
+}
+.text {
+  word-break: break-all;
+  text-align: left;
+}
 .span {
   width: 90%;
   display: flex;
 }
+.task-textarea {
+  resize: none;
+  border: 0 none white;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 0 0 0 0;
+  height: '18px'
+}
+ul {
+  padding: 0;
+}
+li {
+  display: block;
+  background: white;
+  border-bottom: solid 1px gray;
+  &:hover {
+    background: #f7ee0e91;
+  }
+}
+li:last-child {
+  border-radius: 0 0 10px 10px
+}
+.span:last-child {
+  border-radius: 0 0 10px 10px
 }
 </style>

@@ -1,8 +1,11 @@
 <template lang="pug">
-li.list-header
+.list-header
   div(style="display: flex")
-    font-awesome-icon(icon="calendar-alt" class='calendar')
-    input(v-if='editable && thisIndex === index' v-model='item.name' class='list-input')
+    font-awesome-icon(icon="calendar-alt" class='calendar' class='icon')
+    input(v-if='editable && thisIndex === index'
+    v-model='item.name'
+    class='list-input'
+    )
     p(v-else) {{item.name}}
   div
     ListButton(:item='item' :index='index')
@@ -14,6 +17,12 @@ import ListButton from '@/components/ListButton.vue'
 
 export default {
   name: 'ListHeader',
+  data () {
+    return {
+      data: '',
+      oldData: ''
+    }
+  },
   props: {
     item: Object,
     index: Number
@@ -40,5 +49,9 @@ export default {
 .calendar {
   margin-block-start: 1em;
   margin-block-end: 1em;
+}
+.icon {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 </style>

@@ -6,11 +6,11 @@
   template(v-else)
     .move
       .move--up
-        font-awesome-icon(icon="chevron-up")(@click='moveTask("up", index, taskIndex, _id)')
+        font-awesome-icon(icon="chevron-up" class='icon')(@click='moveTask("up", index, taskIndex, _id)')
       .move--down
         font-awesome-icon(icon="chevron-down")(@click='moveTask("down", index, taskIndex, _id)')
-    font-awesome-icon(icon="trash-alt")(@click='removeTask(_id, index, taskIndex)')
-    font-awesome-icon(icon="pen")(@click='taskEdit(taskIndex, task, index)')
+    font-awesome-icon(icon="trash-alt" class='icon')(@click='removeTask(_id, index, taskIndex)')
+    font-awesome-icon(icon="pen" class='icon')(@click='taskEdit')
 </template>
 
 <script>
@@ -48,17 +48,15 @@ export default {
           console.log(this.$Err(err))
         })
     },
+    taskEdit () {
+      this.$parent.taskEdit(this.taskIndex, this.task, this.index)
+    },
     removeTask (id, index, taskIndex) {
       this.$http
         .post('/task/remove/' + id, { index: taskIndex })
         .then((response) => {
           this.$store.dispatch('tasks/remove', { index, taskIndex })
         })
-    },
-    taskEdit (taskIndex, item, index) {
-      console.log(this.thisIndex)
-      console.log(this.index)
-      this.$store.dispatch('tasks/taskedit', { item, taskIndex, index })
     },
     moveTask (side, index, taskIndex, itemId) {
       this.$http
@@ -83,5 +81,6 @@ export default {
   display: inline-grid;
   position: relative;
   bottom: 9px;
+  padding-right: 4px;
 }
 </style>

@@ -64,7 +64,10 @@ const moduleTasks = ({
     listIndex: -1,
     thisTaskIndex: -1,
     taskData: '',
-    editable: false
+    editable: false,
+    index: -1,
+    dropStartIndex: -1,
+    onDropIndex: -1
   },
   mutations: {
     ADD (state, payload) {
@@ -104,6 +107,15 @@ const moduleTasks = ({
         state.listIndex = payload.index
       }
       state.taskData = payload.item
+    },
+    DROPMOVE (state, payload) {
+      var element = this.state.list.todolist[state.index].tasks[state.dropStartIndex]
+      var splicedElement = this.state.list.todolist[state.index].tasks.splice(payload.onDropIndex, 1, element)
+      this.state.list.todolist[state.index].tasks.splice(state.dropStartIndex, 1, splicedElement[0])
+    },
+    SAVEINDEX (state, payload) {
+      state.dropStartIndex = payload.dropStartIndex
+      state.index = payload.index
     }
   },
   actions: {
@@ -121,6 +133,12 @@ const moduleTasks = ({
     },
     taskedit ({ commit }, payload) {
       commit('TASKEDIT', payload)
+    },
+    dropmove ({ commit }, payload) {
+      commit('DROPMOVE', payload)
+    },
+    saveindex ({ commit }, payload) {
+      commit('SAVEINDEX', payload)
     }
   }
 })

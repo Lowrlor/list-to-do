@@ -2,10 +2,10 @@
 .list
   ul(v-for='item, index in list' class='ToDoList')
     ListHeader(:item='item' :index='index')
-    TaskList(:tasks='item.tasks' :index='index' :_id='item._id' :editItem='item.name')
     .form-add-task
       FormTask(:name='item.name' :index='index')
-  FormList
+    TaskList(:tasks='item.tasks' :index='index' :_id='item._id' :editItem='item.name')
+  FormList(:emptyToDoList='emptyList')
 </template>
 
 <script>
@@ -21,7 +21,8 @@ export default {
   name: 'List',
   data () {
     return {
-      newList: ''
+      newList: '',
+      emptyList: []
     }
   },
   props: {
@@ -29,7 +30,8 @@ export default {
     item: Object,
     index: Number,
     _id: Number,
-    name: String
+    name: String,
+    emptyToDoList: Array
   },
   components: {
     ListButton,
@@ -50,15 +52,37 @@ export default {
       })
       .then((response) => {
         this.$store.dispatch('list/getlist', response)
+          .then(() => {
+            this.checkList()
+          })
       })
+  },
+  methods: {
+    checkList () {
+      for (var i = 0; i < this.list.length; i++) {
+        if (this.list[i].tasks.length === 0) {
+          this.emptyList.push(i)
+        }
+      }
+    }
   }
 }
 </script>
 
 <style lang="scss">
+body {
+  background-image: url(/download.png);
+}
 .ToDoList {
   border: 3px solid;
   border-radius: 0 0 15px 15px;
+  margin-bottom: 25px;
+  margin-left: 100px;
+  margin-right: 100px;
+}
+.icon {
+  padding-left: 2px;
+  padding-right: 2px;
 }
 * ul {
   padding-inline-start: 0;

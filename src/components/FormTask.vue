@@ -1,8 +1,9 @@
 <template lang="pug">
-.form
+.form-task
   form(@submit.prevent="savetask($event.target, index)")
-    input(v-model='newTask')
-    button Add task
+    font-awesome-icon(icon="plus" class='plus')
+    input(v-model='newTask' class='task-input')
+    button(class='task-input-button') Add task
 </template>
 
 <script>
@@ -31,3 +32,22 @@ export default {
   }
 }
 </script>
+<style lang='scss'>
+.form-task {
+  background: gray;
+  height: 45px;
+}
+.task-input {
+  width: 90%;
+  position: relative;
+}
+.task-input-button {
+  position: relative;
+}
+.plus {
+  font-size: 30px;
+  position: relative;
+  top: 6.5px;
+  right: 0.2%;
+}
+</style>
