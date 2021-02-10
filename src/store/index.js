@@ -11,7 +11,8 @@ const moduleList = ({
     editable: false,
     thisIndex: -1,
     dropStartIndex: -1,
-    onDropIndex: -1
+    onDropIndex: -1,
+    oldItem: ''
   },
   mutations: {
     SHOWFORM (state) {
@@ -27,14 +28,21 @@ const moduleList = ({
       state.todolist.splice(index, 1)
     },
     UPDATE (state, payload) {
-      state.todolist[payload[1]] = payload[0]
+      state.todolist.splice([payload[1]], 1, payload[0])
+      console.log(state.todolist[payload[1]])
+      console.log(payload[0])
     },
-    EDIT (state, index) {
+    EDIT (state, payload) {
       if (state.editable) {
+        if (payload) {
+          state.oldItem = payload.item
+        }
         state.editable = false
         state.thisIndex = -1
+        state.editable = false
       } else {
-        state.thisIndex = index
+        console.log('there')
+        state.thisIndex = payload.index
         state.editable = true
       }
     },
@@ -60,8 +68,8 @@ const moduleList = ({
     update ({ commit }, payload) {
       commit('UPDATE', payload)
     },
-    edit ({ commit }, index) {
-      commit('EDIT', index)
+    edit ({ commit }, payload) {
+      commit('EDIT', payload)
     },
     dropmove ({ commit }, payload) {
       commit('DROPMOVE', payload)

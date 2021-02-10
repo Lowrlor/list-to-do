@@ -4,13 +4,13 @@
     font-awesome-icon(icon="calendar-alt" class='calendar' class='icon')
     input(
       v-if='editable && thisIndex === index'
-      v-model='item.name'
+      v-model='data'
       class='list-input'
       ref='list-input'
     )
     p(v-else) {{item.name}}
   div
-    ListButton(:item='item' :index='index')
+    ListButton(:item='item' :editItem='data' :index='index')
 </template>
 
 <script>
@@ -21,13 +21,13 @@ export default {
   name: 'ListHeader',
   data () {
     return {
-      data: '',
-      oldData: ''
+      data: ''
     }
   },
   props: {
     item: Object,
-    index: Number
+    index: Number,
+    editItem: String
   },
   components: {
     ListButton
@@ -35,8 +35,17 @@ export default {
   computed: mapState({
     todolist: state => state.list.todolist,
     editable: state => state.list.editable,
-    thisIndex: state => state.list.thisIndex
-  })
+    thisIndex: state => state.list.thisIndex,
+    oldItem: state => state.list.oldItem
+  }),
+  methods: {
+    setValueOfItem () {
+      this.data = this.oldItem.name
+    }
+  },
+  mounted () {
+    this.data = this.item.name
+  }
 }
 </script>
 

@@ -4,7 +4,7 @@
     font-awesome-icon(icon="pen" class='icon')(@click='listEdit(item, index)')
     font-awesome-icon(icon="trash-alt" class='icon')(@click='removelist(index, item._id)')
   template(v-if='editable')
-    button(@click='update(item.name, index, item._id)') Save
+    button(@click='update(editItem, index, item._id)') Save
     button(@click='listEdit(item)') X
 </template>
 
@@ -27,14 +27,17 @@ export default {
   }),
   methods: {
     listEdit (item, index) {
-      this.$store.dispatch('list/edit', index)
+      this.$store.dispatch('list/edit', { index, item })
         .then(() => {
           if (this.editable) {
             document.getElementsByClassName('list-input').[0].focus()
+          } else {
+            this.$parent.setValueOfItem()
           }
         })
     },
     update (data, index, id) {
+      console.log(data)
       this.$http
         .post('/list/edit/' + id, { name: data })
         .then((response) => {
@@ -43,11 +46,9 @@ export default {
         })
         .then((response) => {
           this.$store.dispatch('list/update', [response, index])
-          this.newList = ''
-          this.edit = false
-          this.i = ''
         })
         .catch(err => {
+          console.log(err)
           console.log(this.$Err(err))
         })
     },
@@ -60,11 +61,6 @@ export default {
         .catch(err => {
           console.log(this.$Err(err))
         })
-    }
-  },
-  watch: {
-    editable: function (value) {
-      this.edit = value
     }
   }
 }
