@@ -48,7 +48,7 @@ export default {
           console.log(this.$Err(err))
         })
     },
-    taskEdit () {
+    taskEdit (task) {
       this.$parent.taskEdit(this.taskIndex, this.task, this.index)
     },
     removeTask (id, index, taskIndex) {

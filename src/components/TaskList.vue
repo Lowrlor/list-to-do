@@ -13,11 +13,8 @@
       template(v-if='editable && taskIndex === thisTaskIndex && thisIndex === index')
         input(
           v-model='data'
-          @blur='updateTask(_id, taskIndex, index)'
           @focus='disableDraggable(taskIndex, task)'
-          class='task-textarea'
           ref='searchInput'
-          id='txtArea'
           v-on:keyup.enter='onEnter(_id, taskIndex, index)'
           v-on:keyup.esc='backToOldData(taskIndex)'
           @keydown="$event.keyCode === 13 ? $event.preventDefault() : false"
@@ -45,7 +42,8 @@ export default {
     return {
       data: '',
       input: false,
-      oldData: ''
+      oldData: '',
+      oldDataForInput: ''
     }
   },
   props: {
@@ -72,25 +70,18 @@ export default {
     taskEdit (taskIndex, item, index) {
       this.$store.dispatch('tasks/taskedit', { item, taskIndex, index })
         .then(() => {
-          this.$refs.searchInput.[0].style.width = item.length * 8 + 'px'
-          this.focusing(this.$refs)
+          if (this.editable) {
+            console.log(this.editable)
+            this.$refs.searchInput.[0].style.width = item.length * 8 + 'px'
+            this.focusing(this.$refs)
+            this.oldDataForInput = this.data
+          } else {
+            this.data = this.oldDataForInput
+            this.input = false
+          }
         })
         .catch(err => {
-          console.log(this.$Err(err))
-        })
-    },
-    updateTask (id, taskIndex, index) {
-      this.$http
-        .post('/task/edit/' + id, { task: this.data.trim(), taskIndex })
-        .then((response) => {
-          return response.data
-        })
-        .then((response) => {
-          this.$store.dispatch('tasks/update', { index, taskIndex, data: this.data.trim() })
-          document.getElementsByClassName('drag-el')[taskIndex].draggable = true
-          this.input = false
-        })
-        .catch(err => {
+          console.log(err)
           console.log(this.$Err(err))
         })
     },
@@ -100,7 +91,6 @@ export default {
       }
     },
     startDrag (evt, index, taskIndex) {
-      console.log('there')
       document.getElementsByClassName('ToDoList')[index].draggable = false
       this.$store.dispatch('tasks/saveindex', { index, dropStartIndex: taskIndex })
       evt.dataTransfer.dropEffect = 'move'
