@@ -75,6 +75,9 @@ export default {
           this.$refs.searchInput.[0].style.width = item.length * 8 + 'px'
           this.focusing(this.$refs)
         })
+        .catch(err => {
+          console.log(this.$Err(err))
+        })
     },
     updateTask (id, taskIndex, index) {
       this.$http
@@ -97,6 +100,8 @@ export default {
       }
     },
     startDrag (evt, index, taskIndex) {
+      console.log('there')
+      document.getElementsByClassName('ToDoList')[index].draggable = false
       this.$store.dispatch('tasks/saveindex', { index, dropStartIndex: taskIndex })
       evt.dataTransfer.dropEffect = 'move'
       evt.dataTransfer.effectAllowed = 'move'
@@ -106,6 +111,12 @@ export default {
         .post('/task/dropmove', { onDropIndex: taskIndex, index, dropStartIndex, id: _id })
         .then((response) => {
           this.$store.dispatch('tasks/dropmove', { onDropIndex: taskIndex })
+            .then(() => {
+              document.getElementsByClassName('ToDoList')[index].draggable = true
+            })
+        })
+        .catch(err => {
+          console.log(this.$Err(err))
         })
     },
     disableDraggable (taskIndex, task) {
@@ -127,14 +138,6 @@ export default {
     data: function (value) {
       if (this.input) {
         this.$refs.searchInput.[0].style.width = value.length * 8 + 'px'
-      }
-    },
-    tasks (val) {
-      var element = document.getElementsByClassName('form-task').[this.index]
-      if (val.length !== 0) {
-        element.style.borderRadius = '0 0 0 0'
-      } else {
-        element.style.borderRadius = '0 0 10px 10px'
       }
     }
   }

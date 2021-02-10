@@ -57,12 +57,18 @@ export default {
         .then((response) => {
           this.$store.dispatch('tasks/remove', { index, taskIndex })
         })
+        .catch(err => {
+          console.log(this.$Err(err))
+        })
     },
     moveTask (side, index, taskIndex, itemId) {
       this.$http
         .post('/task/move', { side, index, taskIndex, id: itemId })
         .then((response) => {
           this.$store.dispatch('tasks/move', { side, index, taskIndex })
+        })
+        .catch(err => {
+          console.log(this.$Err(err))
         })
     }
   }

@@ -28,6 +28,9 @@ export default {
           this.$store.dispatch('tasks/add', [item[0].value, index])
           this.newTask = ''
         })
+        .catch(err => {
+          console.log(this.$Err(err))
+        })
     }
   }
 }

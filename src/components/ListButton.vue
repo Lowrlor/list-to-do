@@ -28,6 +28,11 @@ export default {
   methods: {
     listEdit (item, index) {
       this.$store.dispatch('list/edit', index)
+        .then(() => {
+          if (this.editable) {
+            document.getElementsByClassName('list-input').[0].focus()
+          }
+        })
     },
     update (data, index, id) {
       this.$http
@@ -42,12 +47,18 @@ export default {
           this.edit = false
           this.i = ''
         })
+        .catch(err => {
+          console.log(this.$Err(err))
+        })
     },
     removelist (index, id) {
       this.$http
         .delete('/list/remove/' + id)
         .then((response) => {
           this.$store.dispatch('list/removelist', index)
+        })
+        .catch(err => {
+          console.log(this.$Err(err))
         })
     }
   },

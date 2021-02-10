@@ -2,20 +2,22 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 Vue.use(Vuex)
-
+// setlist
 const moduleList = ({
   namespaced: true,
   state: {
     todolist: [],
     showForm: false,
     editable: false,
-    thisIndex: -1
+    thisIndex: -1,
+    dropStartIndex: -1,
+    onDropIndex: -1
   },
   mutations: {
     SHOWFORM (state) {
       state.showForm = true
     },
-    GETLIST (state, payload) {
+    SETLIST (state, payload) {
       state.todolist = payload
     },
     ADDLIST (state, payload) {
@@ -35,14 +37,19 @@ const moduleList = ({
         state.thisIndex = index
         state.editable = true
       }
+    },
+    DROPMOVE (state, payload) {
+      var element = this.state.list.todolist[payload.dropStartIndex]
+      var splicedElement = this.state.list.todolist.splice(payload.index, 1, element)
+      this.state.list.todolist.splice(payload.dropStartIndex, 1, splicedElement[0])
     }
   },
   actions: {
     showform ({ commit }) {
       commit('SHOWFORM')
     },
-    getlist ({ commit }, payload) {
-      commit('GETLIST', payload)
+    setlist ({ commit }, payload) {
+      commit('SETLIST', payload)
     },
     addlist ({ commit }, payload) {
       commit('ADDLIST', payload)
@@ -55,6 +62,9 @@ const moduleList = ({
     },
     edit ({ commit }, index) {
       commit('EDIT', index)
+    },
+    dropmove ({ commit }, payload) {
+      commit('DROPMOVE', payload)
     }
   }
 })

@@ -1,10 +1,12 @@
 <template lang="pug">
 .list-header
-  div(style="display: flex")
+  .input-with-text
     font-awesome-icon(icon="calendar-alt" class='calendar' class='icon')
-    input(v-if='editable && thisIndex === index'
-    v-model='item.name'
-    class='list-input'
+    input(
+      v-if='editable && thisIndex === index'
+      v-model='item.name'
+      class='list-input'
+      ref='list-input'
     )
     p(v-else) {{item.name}}
   div
@@ -34,23 +36,7 @@ export default {
     todolist: state => state.list.todolist,
     editable: state => state.list.editable,
     thisIndex: state => state.list.thisIndex
-  }),
-  watch: {
-    todolist (val) {
-      console.log(val)
-      for (var i = 0; i < val.length; i++) {
-        var element = document.getElementsByClassName('form-task').[i]
-        if (val[i].tasks.length === 0) {
-          console.log('here')
-          console.log(element)
-          element.style.borderRadius = '1px 1px 10px 10px'
-        } else {
-          console.log('there')
-          element.style.borderRadius = '1px 1px 0 0'
-        }
-      }
-    }
-  }
+  })
 }
 </script>
 
@@ -70,5 +56,8 @@ export default {
 .icon {
   margin-left: 5px;
   margin-right: 5px;
+}
+.input-with-text {
+  display: flex;
 }
 </style>

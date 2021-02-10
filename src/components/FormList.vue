@@ -17,7 +17,6 @@ export default {
     }
   },
   props: {
-    emptyToDoList: Array
   },
   computed: mapState({
     show: state => state.list.showForm
@@ -36,14 +35,9 @@ export default {
           this.$store.dispatch('list/addlist', response)
           this.newList = ''
         })
-    }
-  },
-  watch: {
-    emptyToDoList () {
-      for (var i = 0; i < this.emptyToDoList.length; i++) {
-        var element = document.getElementsByClassName('form-task').[this.emptyToDoList.[i]]
-        element.style.borderRadius = '0 0 10px 10px'
-      }
+        .catch(err => {
+          console.log(this.$Err(err))
+        })
     }
   }
 }
