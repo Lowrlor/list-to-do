@@ -10,7 +10,7 @@
     )
     p(v-else) {{item.name}}
   div
-    ListButton(:item='item' :editItem='data' :index='index')
+    ListButton(:item='item' :editableItem='data' :index='index')
 </template>
 
 <script>
@@ -27,7 +27,7 @@ export default {
   props: {
     item: Object,
     index: Number,
-    editItem: String
+    editableItem: String
   },
   components: {
     ListButton

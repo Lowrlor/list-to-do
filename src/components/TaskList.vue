@@ -1,5 +1,9 @@
 <template lang="pug">
 .task-list
+  .trash-tasklist(v-if='checkbox.length > 0')
+    font-awesome-icon(icon="trash-alt" class='trash-icon-tasklist')(
+        @click='removeTaskFromCheckBox(checkbox, index, _id)'
+      )
   li(
     v-for='task, taskIndex in tasks'
     draggable
@@ -21,6 +25,11 @@
           toggle-nav='taskEdit(taskIndex, task, index)'
         )
       template(v-else)
+        label(@click='onCheckbox($event.target.checked, index, taskIndex)' class='checkbox-label ')
+          input(
+            type='checkbox'
+            class='checkbox'
+          )
         span(@click='taskEdit(taskIndex, task, index)').span
           p(class='text') {{task}}
       TaskButton(
@@ -43,7 +52,8 @@ export default {
       data: '',
       input: false,
       oldData: '',
-      oldDataForInput: ''
+      oldDataForInput: '',
+      checkbox: []
     }
   },
   props: {
@@ -119,6 +129,34 @@ export default {
     },
     backToOldData (taskIndex) {
       this.data = this.oldData
+    },
+    onCheckbox (checked, index, taskIndex) {
+      if (checked) {
+        this.checkbox.push(taskIndex)
+      } else {
+        this.checkbox.splice(this.checkbox.indexOf(taskIndex), 1)
+      }
+    },
+    removeTaskFromCheckBox (checkbox, index, _id) {
+      console.log(_id)
+      console.log(checkbox)
+      this.$http
+        .post('task/removetasks/' + _id, { checkbox })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch((err) => {
+          console.log(err)
+          console.log(this.$Err(err))
+        })
+      this.$store.dispatch('tasks/removebycheckbox', { checkbox, index })
+        .then(() => {
+          var checkbox = document.getElementsByClassName('checkbox')
+          for (var i = 0; i < checkbox.length; i++) {
+            checkbox[i].checked = false
+          }
+          this.checkbox = []
+        })
     }
   },
   watch: {
@@ -148,14 +186,6 @@ export default {
   width: 90%;
   display: flex;
 }
-.task-textarea {
-  resize: none;
-  border: 0 none white;
-  overflow: hidden;
-  padding: 0;
-  border-radius: 0 0 0 0;
-  height: '18px'
-}
 ul {
   padding: 0;
 }
@@ -168,9 +198,25 @@ li {
   }
 }
 li:last-child {
-  border-radius: 0 0 10px 10px
+  border-radius: 0 0 10px 10px;
 }
 .span:last-child {
-  border-radius: 0 0 10px 10px
+  border-radius: 0 0 10px 10px;
+}
+.trash-tasklist {
+  background: #fff;
+  border-bottom: solid 1px gray;
+  height: 35px;
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 20px;
+}
+.trash-icon-tasklist {
+  position: relative;
+  right: 5px;
+}
+.checkbox-label {
+  width: 45px;
 }
 </style>

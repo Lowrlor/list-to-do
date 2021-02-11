@@ -29,8 +29,6 @@ const moduleList = ({
     },
     UPDATE (state, payload) {
       state.todolist.splice([payload[1]], 1, payload[0])
-      console.log(state.todolist[payload[1]])
-      console.log(payload[0])
     },
     EDIT (state, payload) {
       if (state.editable) {
@@ -94,6 +92,12 @@ const moduleTasks = ({
     REMOVE (state, payload) {
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1)
     },
+    REMOVEBYCHECKBOX (state, payload) {
+      console.log(payload)
+      for (var i = 0; i < payload.checkbox.length; i++) {
+        this.state.list.todolist[payload.index].tasks.splice(payload.checkbox[i], 1)
+      }
+    },
     UPDATE (state, payload) {
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, payload.data)
       state.editable = false
@@ -142,6 +146,9 @@ const moduleTasks = ({
     },
     remove ({ commit }, payload) {
       commit('REMOVE', payload)
+    },
+    removebycheckbox ({ commit }, payload) {
+      commit('REMOVEBYCHECKBOX', payload)
     },
     update ({ commit }, payload) {
       commit('UPDATE', payload)

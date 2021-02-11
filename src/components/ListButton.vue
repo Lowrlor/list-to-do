@@ -4,7 +4,7 @@
     font-awesome-icon(icon="pen" class='icon')(@click='listEdit(item, index)')
     font-awesome-icon(icon="trash-alt" class='icon')(@click='removelist(index, item._id)')
   template(v-if='editable')
-    button(@click='update(editItem, index, item._id)') Save
+    button(@click='update(editableItem, index, item._id)') Save
     button(@click='listEdit(item)') X
 </template>
 
@@ -20,7 +20,7 @@ export default {
   props: {
     item: Object,
     index: Number,
-    editItem: String
+    editableItem: String
   },
   computed: mapState({
     editable: state => state.list.editable
@@ -37,7 +37,6 @@ export default {
         })
     },
     update (data, index, id) {
-      console.log(data)
       this.$http
         .post('/list/edit/' + id, { name: data })
         .then((response) => {
