@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 Vue.use(Vuex)
-// setlist
+
 const moduleList = ({
   namespaced: true,
   state: {
@@ -39,7 +39,6 @@ const moduleList = ({
         state.thisIndex = -1
         state.editable = false
       } else {
-        console.log('there')
         state.thisIndex = payload.index
         state.editable = true
       }
@@ -87,7 +86,7 @@ const moduleTasks = ({
   },
   mutations: {
     ADD (state, payload) {
-      this.state.list.todolist[payload[1]].tasks.push(payload[0])
+      this.state.list.todolist[payload[1]].tasks.unshift(payload[0])
     },
     REMOVE (state, payload) {
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1)
@@ -95,7 +94,7 @@ const moduleTasks = ({
     REMOVEBYCHECKBOX (state, payload) {
       console.log(payload)
       for (var i = 0; i < payload.checkbox.length; i++) {
-        this.state.list.todolist[payload.index].tasks.splice(payload.checkbox[i], 1)
+        this.state.list.todolist[payload.index].tasks.splice(payload.checkbox[i] - i, 1)
       }
     },
     UPDATE (state, payload) {

@@ -1,9 +1,7 @@
 <template lang="pug">
 .task-list
-  .trash-tasklist(v-if='checkbox.length > 0')
-    font-awesome-icon(icon="trash-alt" class='trash-icon-tasklist')(
-        @click='removeTaskFromCheckBox(checkbox, index, _id)'
-      )
+  .trash-tasklist(v-if='checkbox.length > 0' @click='removeTaskFromCheckBox(checkbox, index, _id)')
+    font-awesome-icon(icon="trash-alt" class='trash-icon-tasklist')()
   li(
     v-for='task, taskIndex in tasks'
     draggable
@@ -25,7 +23,7 @@
           toggle-nav='taskEdit(taskIndex, task, index)'
         )
       template(v-else)
-        label(@click='onCheckbox($event.target.checked, index, taskIndex)' class='checkbox-label ')
+        label(@click='onCheckbox($event, index, taskIndex)' class='checkbox-label ')
           input(
             type='checkbox'
             class='checkbox'
@@ -81,7 +79,6 @@ export default {
       this.$store.dispatch('tasks/taskedit', { item, taskIndex, index })
         .then(() => {
           if (this.editable) {
-            console.log(this.editable)
             this.$refs.searchInput.[0].style.width = item.length * 8 + 'px'
             this.focusing(this.$refs)
             this.oldDataForInput = this.data
@@ -131,31 +128,29 @@ export default {
       this.data = this.oldData
     },
     onCheckbox (checked, index, taskIndex) {
-      if (checked) {
+      if (checked.target.checked === true) {
         this.checkbox.push(taskIndex)
-      } else {
+      }
+      if (checked.target.checked === false) {
         this.checkbox.splice(this.checkbox.indexOf(taskIndex), 1)
       }
     },
     removeTaskFromCheckBox (checkbox, index, _id) {
-      console.log(_id)
-      console.log(checkbox)
       this.$http
         .post('task/removetasks/' + _id, { checkbox })
         .then((response) => {
-          console.log(response)
+          this.$store.dispatch('tasks/removebycheckbox', { checkbox, index })
+            .then(() => {
+              var checkbox = document.getElementsByClassName('checkbox')
+              for (var i = 0; i < checkbox.length; i++) {
+                checkbox[i].checked = false
+              }
+              this.checkbox = []
+            })
         })
         .catch((err) => {
           console.log(err)
           console.log(this.$Err(err))
-        })
-      this.$store.dispatch('tasks/removebycheckbox', { checkbox, index })
-        .then(() => {
-          var checkbox = document.getElementsByClassName('checkbox')
-          for (var i = 0; i < checkbox.length; i++) {
-            checkbox[i].checked = false
-          }
-          this.checkbox = []
         })
     }
   },
