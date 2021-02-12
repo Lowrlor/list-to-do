@@ -122,7 +122,7 @@ export default {
       this.oldData = task
     },
     onEnter (id, taskIndex, index) {
-      this.updateTask(id, taskIndex, index)
+      this.$children[0].updateTask(id, taskIndex, index)
     },
     backToOldData (taskIndex) {
       this.data = this.oldData
