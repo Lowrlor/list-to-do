@@ -15,7 +15,6 @@ import {
   faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
 Axios.defaults.baseURL = process.env.VUE_APP_BASE_URL
 Vue.prototype.$http = Axios
 Vue.prototype.$Err = function (err) {

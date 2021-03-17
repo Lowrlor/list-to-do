@@ -8,7 +8,6 @@
 
 <script>
 import { mapState } from 'vuex'
-
 export default {
   name: 'FormList',
   data () {
@@ -19,25 +18,28 @@ export default {
   props: {
   },
   computed: mapState({
-    show: state => state.list.showForm
+    show: state => state.list.showForm,
+    user: state => state.list.user
   }),
   methods: {
     showForm () {
       this.$store.dispatch('list/showform')
     },
     savelist (item) {
-      this.$http
-        .post('/list', { name: item.[0].value })
-        .then((response) => {
-          return response.data
-        })
-        .then((response) => {
-          this.$store.dispatch('list/addlist', response)
-          this.newList = ''
-        })
-        .catch(err => {
-          console.log(this.$Err(err))
-        })
+      if (item.[0].value) {
+        this.$http
+          .post('/list', { name: item.[0].value, owner_id: this.user._id }, { headers: { Authorization: this.user.token } })
+          .then((response) => {
+            return response.data
+          })
+          .then((response) => {
+            this.$store.dispatch('list/addlist', response)
+            this.newList = ''
+          })
+          .catch(err => {
+            console.log(this.$Err(err))
+          })
+      }
     }
   }
 }

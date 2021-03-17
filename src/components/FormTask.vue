@@ -19,18 +19,20 @@ export default {
   },
   methods: {
     savetask (item, index) {
-      this.$http
-        .post('/task', { name: this.name, task: item[0].value })
-        .then((response) => {
-          return response.data
-        })
-        .then((response) => {
-          this.$store.dispatch('tasks/add', [item[0].value, index])
-          this.newTask = ''
-        })
-        .catch(err => {
-          console.log(this.$Err(err))
-        })
+      if (item[0].value.length > 0) {
+        this.$http
+          .post('/task', { name: this.name, task: item[0].value })
+          .then((response) => {
+            return response.data
+          })
+          .then((response) => {
+            this.$store.dispatch('tasks/add', [item[0].value, index])
+            this.newTask = ''
+          })
+          .catch(err => {
+            console.log(this.$Err(err))
+          })
+      }
     }
   }
 }
@@ -41,7 +43,7 @@ export default {
   height: 45px;
 }
 .task-input {
-  width: 90%;
+  width: 80%;
   position: relative;
 }
 .task-input-button {

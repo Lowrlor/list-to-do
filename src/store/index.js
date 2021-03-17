@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import Axios from 'axios'
+import router from '../router'
 Vue.use(Vuex)
+
+Axios.defaults.baseURL = process.env.VUE_APP_BASE_URL
+const $http = Axios
 
 const moduleList = ({
   namespaced: true,
@@ -12,16 +16,25 @@ const moduleList = ({
     thisIndex: -1,
     dropStartIndex: -1,
     onDropIndex: -1,
-    oldItem: ''
+    oldItem: '',
+    user: null
   },
   mutations: {
     SHOWFORM (state) {
-      state.showForm = true
+      if (state.showForm) {
+        state.showForm = false
+      } else {
+        state.showForm = true
+      }
     },
     SETLIST (state, payload) {
-      state.todolist = payload
+      if (payload) {
+        state.todolist = payload
+      }
     },
     ADDLIST (state, payload) {
+      console.log(payload)
+      console.log(state)
       state.todolist.push(payload)
     },
     REMOVELIST (state, index) {
@@ -47,6 +60,21 @@ const moduleList = ({
       var element = this.state.list.todolist[payload.dropStartIndex]
       var splicedElement = this.state.list.todolist.splice(payload.index, 1, element)
       this.state.list.todolist.splice(payload.dropStartIndex, 1, splicedElement[0])
+    },
+    LOGIN (state, payload) {
+      if (payload.data.user) {
+        state.user = payload.data.user
+      }
+    },
+    LOGOUT (state, payload) {
+      state.user = null
+      router.push('/login')
+    },
+    LOGINUSERBYTOKEN (state, payload) {
+      if (payload) {
+        state.user = payload
+        router.push('/')
+      }
     }
   },
   actions: {
@@ -70,6 +98,36 @@ const moduleList = ({
     },
     dropmove ({ commit }, payload) {
       commit('DROPMOVE', payload)
+    },
+    login ({ commit }, payload) {
+      const { email, password } = payload
+      return $http
+        .post('/users/login', { email, password })
+        .then((response) => {
+          commit('LOGIN', response)
+          commit('SETLIST', response.data.lists)
+          return response
+        })
+        .catch((err) => {
+          err = Object.assign({}, err)
+          return err.response
+        })
+    },
+    logout ({ commit }, payload) {
+      commit('LOGOUT', payload)
+    },
+    loginuserbytoken ({ commit }, payload) {
+      return $http
+        .post('/users/loginbytoken', { }, { headers: { Authorization: payload.thisToken } })
+        .then((response) => {
+          commit('LOGINUSERBYTOKEN', response.data.user)
+          console.log(response.data.lists)
+          commit('SETLIST', response.data.lists)
+          return response.data.user
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   }
 })
@@ -92,7 +150,6 @@ const moduleTasks = ({
       this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1)
     },
     REMOVEBYCHECKBOX (state, payload) {
-      console.log(payload)
       for (var i = 0; i < payload.checkbox.length; i++) {
         this.state.list.todolist[payload.index].tasks.splice(payload.checkbox[i] - i, 1)
       }
@@ -104,6 +161,7 @@ const moduleTasks = ({
     MOVE (state, payload) {
       if (payload.side === 'up') {
         if (payload.taskIndex !== 0) {
+          console.log(payload.taskIndex)
           var element = this.state.list.todolist[payload.index].tasks[payload.taskIndex]
           var splicedElement = this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex - 1, 1, element)
           this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, splicedElement[0])
@@ -111,6 +169,7 @@ const moduleTasks = ({
       } else {
         var len = this.state.list.todolist[payload.index].tasks.length
         if (payload.taskIndex + 1 !== len) {
+          console.log(payload.taskIndex)
           element = this.state.list.todolist[payload.index].tasks[payload.taskIndex]
           splicedElement = this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex + 1, 1, element)
           this.state.list.todolist[payload.index].tasks.splice(payload.taskIndex, 1, splicedElement[0])

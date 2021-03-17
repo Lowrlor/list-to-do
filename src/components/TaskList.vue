@@ -188,24 +188,21 @@ li {
   display: block;
   background: white;
   border-bottom: solid 1px gray;
+  height: 47.1px;
   &:hover {
-    background: #f7ee0e91;
+    background: #f0b32f;
   }
 }
-li:last-child {
-  border-radius: 0 0 10px 10px;
-}
-.span:last-child {
-  border-radius: 0 0 10px 10px;
-}
 .trash-tasklist {
-  background: #fff;
-  border-bottom: solid 1px gray;
-  height: 35px;
+  height: 40px;
   align-items: center;
   display: flex;
+  width: 30px;
   justify-content: flex-end;
   font-size: 20px;
+  position: absolute;
+  right: 109px;
+  top: 140px;
 }
 .trash-icon-tasklist {
   position: relative;
